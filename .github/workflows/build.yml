@@ -1,0 +1,35 @@
+name: Build Geode Mod
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract ZIP
+        run: |
+          mkdir project
+          ZIP=$(find . -type f -name "*.zip" | head -n 1)
+          echo "Found ZIP: $ZIP"
+          unzip -q "$ZIP" -d project
+
+      - name: Find project folder
+        run: |
+          find project -maxdepth 3 -name mod.json -print
+
+      - name: Build Geode mod
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          path: project/hiiii-main-level-editor
+
+      - name: Upload .geode
+        uses: actions/upload-artifact@v4
+        with:
+          name: hiiii-main-level-editor
+          path: project/hiiii-main-level-editor/build/**/*.geode
